@@ -4,6 +4,15 @@ require_once '../../models/hotels.php';
 
 $hotelModul = new hotel($mysqli);
 
-$response = $hotelModul->addHotel('name', 'location', 'rooms');
+if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 
-echo json_encode($response);
+    $name = $_POST['name'];
+    $location = $_POST['location'];
+    $rooms = $_POST['rooms'];
+    
+    $response = $hotelModul->addHotel($name, $location, $rooms);
+
+    echo json_encode($response);
+} else {
+    echo json_encode(['error' => 'wrong method']);
+}

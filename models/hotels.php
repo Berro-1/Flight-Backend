@@ -25,7 +25,9 @@ class hotel
             $types .= 's';
             $params[] = $name;
         }
+
         $stmt = $this->mysqli->prepare($query);
+
         if(!empty($params)){
             $stmt->bind_param($types, ...$params);
         }
@@ -50,7 +52,8 @@ class hotel
         $query = 'insert into hotels (hotel_name, location, available_rooms) values (?, ?, ?)';
         $stmt = $this->mysqli->prepare($query);
         $stmt->bind_param('ssi', $name, $location, $rooms);
-        return $stmt->execute();
+        $stmt->execute();
+        ['message' => 'Hotel added successfully'];
     }
 
     public function deleteHotelById($id)
@@ -71,5 +74,49 @@ class hotel
             return ['message' => 'Hotel not found'];
         }
     }
+
+    public function updateHotel($id, $name = null, $location = null, $rooms = null)
+{
+    $query = 'UPDATE hotels SET ';
+
+    $params = [];
+    
+    if ($name !== null) {
+        $query .= 'hotel_name=?, ';
+        $params[] = $name; 
+    }
+    if ($location !== null) {
+        $query .= 'location=?, ';
+        $params[] = $location; 
+    }
+    if ($rooms !== null) {
+        $query .= 'available_rooms=?, ';
+        $params[] = $rooms; 
+    }
+
+    // Remove the trailing comma and space from the query
+    $query = rtrim($query, ', ');
+
+    $query .= ' WHERE hotel_id=?';
+    $params[] = $id; 
+    
+    $stmt = $this->mysqli->prepare($query);
+    if (!$stmt) {
+        throw new Exception("Prepare failed: (" . $this->mysqli->errno . ") " . $this->mysqli->error);
+    }
+
+    $types = str_repeat('s', count($params)); 
+    $stmt->bind_param($types, ...$params);
+
+    $stmt->execute();
+
+    // Check affected rows
+    if ($stmt->affected_rows > 0) {
+        return ['message' => 'Hotel updated successfully', 'rowCount' => $stmt->affected_rows];
+    } else {
+        return ['message' => 'Hotel not found or no changes made'];
+    }
+}
+
     
 }
