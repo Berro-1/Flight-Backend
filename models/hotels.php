@@ -11,7 +11,9 @@ class hotel
     public function getAllHotels(){
 
         $query = 'select * from hotels';
-        $result = $this->mysqli->prepare($query);
+        $stmt = $this->mysqli->prepare($query);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
         if($result->num_rows > 0){
             $hotels = [];
