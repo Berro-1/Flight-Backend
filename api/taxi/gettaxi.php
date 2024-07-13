@@ -1,7 +1,7 @@
 <?php
-
 require '../../config/config.php'; // Path to  database connection
 require '../../models/Taxi.php';   // Path to taxi model
+
 
 // Initialize the database connection
 $mysqli = getDBConnection();
