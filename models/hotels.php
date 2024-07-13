@@ -8,10 +8,28 @@ class hotel
     {
         $this->mysqli = $mysqli;
     }
-    public function getAllHotels(){
+
+    public function getAllHotels($id=null, $name=null){
 
         $query = 'select * from hotels';
+        $types = '';
+        $params = [];
+
+        if($id){
+            $query .= ' where hotel_id=?';
+            $types .= 'i';
+            $params[] = $id;
+        }
+        if($name){
+            $query .= ($id) ? ' and hotel_name=?': ' where hotel_name=?';
+            $types .= 's';
+            $params[] = $name;
+        }
         $stmt = $this->mysqli->prepare($query);
+        if(!empty($params)){
+            $stmt->bind_param($types, ...$params);
+        }
+        
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -27,21 +45,6 @@ class hotel
         
     }
 
-    public function getHotelById($id){
-
-        $query = 'select * from hotels where id=?';
-        $stmt = $this->mysqli->prepare($query);
-        $stmt->bind_param('i', $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows > 0){
-            return $result->fetch_assoc();
-        } else {
-            return null;
-        }
-    }
-
     public function addHotel($name, $location, $rooms){
 
         $query = 'insert into hotels (hotel_name, location, available_rooms) values (?, ?, ?)';
@@ -50,16 +53,23 @@ class hotel
         return $stmt->execute();
     }
 
-    public function deleteHotel($id){
-
-        $query = 'delete from hotels where hotel_id=?';
+    public function deleteHotelById($id)
+    {
+        $query = 'DELETE FROM hotels WHERE hotel_id = ?';
         $stmt = $this->mysqli->prepare($query);
+        
+        if (!$stmt) {
+            throw new Exception("Prepare failed: (" . $this->mysqli->errno . ") " . $this->mysqli->error);
+        }
+    
         $stmt->bind_param('i', $id);
         $stmt->execute();
-        if($stmt->effected_rows > 0){
-            return ['message'=>'hotel deleted successfully', 'rowCount'=>$stmt->effected_rows]; 
+    
+        if ($stmt->affected_rows > 0) {
+            return ['message' => 'Hotel deleted successfully', 'rowCount' => $stmt->affected_rows];
         } else {
-            return ['message'=>'hotel not found'];
+            return ['message' => 'Hotel not found'];
         }
     }
+    
 }
