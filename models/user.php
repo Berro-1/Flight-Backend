@@ -119,28 +119,47 @@ class User
         ];
     }
 
-    public function delete($id = null, $email = null)
+    public function delete($id, $password)
     {
-        if ($id) {
-            $stmt = $this->mysqli->prepare('DELETE FROM users WHERE id = ?');
-            $stmt->bind_param("i", $id);
-            $stmt->execute();
-            if ($stmt->affected_rows > 0) {
-                return ["message" => "User deleted successfully by ID", "rowCount" => $stmt->affected_rows];
-            } else {
-                return ["message" => "User not found with provided ID"];
-            }
-        } elseif ($email) {
-            $stmt = $this->mysqli->prepare('DELETE FROM users WHERE email = ?');
-            $stmt->bind_param("s", $email);
-            $stmt->execute();
-            if ($stmt->affected_rows > 0) {
-                return ["message" => "User deleted successfully by email", "rowCount" => $stmt->affected_rows];
-            } else {
-                return ["message" => "User not found with provided email"];
-            }
+        if (!isset($id) || !is_numeric($id) || $id <= 0) {
+            return ["message" => "Invalid user ID"];
+        }
+
+        if (!isset($password) || empty($password)) {
+            return ["message" => "Password is required"];
+        }
+
+        // Check if user exists
+        $stmt = $this->mysqli->prepare('SELECT password FROM users WHERE id = ?');
+        if (!$stmt) {
+            return ["message" => "Database error: " . $this->mysqli->error];
+        }
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+
+        if (!$user) {
+            return ["message" => "User not found"];
+        }
+
+        // Validate the password
+        if (!password_verify($password, $user['password'])) {
+            return ["message" => "Invalid password"];
+        }
+
+        // Delete the user
+        $stmt = $this->mysqli->prepare('DELETE FROM users WHERE id = ?');
+        if (!$stmt) {
+            return ["message" => "Database error: " . $this->mysqli->error];
+        }
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        if ($stmt->affected_rows > 0) {
+            return ["message" => "User deleted successfully"];
         } else {
-            return ["message" => "ID or Email is required for deletion"];
+            return ["message" => "User not found"];
         }
     }
+
 }
