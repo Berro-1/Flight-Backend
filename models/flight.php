@@ -68,7 +68,7 @@ class Flight
         return ["message" => "Flight created successfully"];
     }
     
-    public function get()
+    public function read()
     {
         $result = $this->mysqli->query('SELECT * FROM flights');
         if (!$result) {
@@ -77,7 +77,7 @@ class Flight
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function getOne($flight_id)
+    public function readOne($flight_id)
     {
         if (!isset($flight_id) || !is_numeric($flight_id) || $flight_id <= 0) {
             return ["message" => "Invalid flight ID"];
@@ -95,5 +95,15 @@ class Flight
             return ["message" => "Flight not found"];
         }
         return $flight;
+    }
+    public function update($flight_id, $flight_number, $departure_airport_id, $destination_airport_id, $departure_datetime, $arrival_datetime, $available_seats)
+    {
+        $stmt = $this->mysqli->prepare('UPDATE flights SET flight_number = ?, departure_airport_id = ?, destination_airport_id = ?, departure_datetime = ?, arrival_datetime = ?, available_seats = ? WHERE flight_id = ?');
+        if (!$stmt) {
+            return ["message" => "Database error: " . $this->mysqli->error];
+        }
+        $stmt->bind_param("iiissii", $flight_number, $departure_airport_id, $destination_airport_id, $departure_datetime, $arrival_datetime, $available_seats, $flight_id);
+        $stmt->execute();
+        return ["message" => "Flight updated successfully"];
     }
 }
