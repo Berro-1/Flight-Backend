@@ -34,5 +34,94 @@ class Taxi {
             return ["message" => "No record found"]; 
         }
     }
+
+
+
+    // New method to update taxi details
+    public function updateTaxi($taxi_id, $driver_name, $status, $from_location, $to_location) {
+        $stmt = $this->conn->prepare('
+            UPDATE taxis 
+            SET driver_name = ?, 
+                status = ?, 
+                from_location = ?, 
+                to_location = ? 
+            WHERE taxi_id = ?
+        ');
+
+        $stmt->bind_param('ssssi', $driver_name, $status, $from_location, $to_location, $taxi_id);
+
+        try {
+
+            $stmt->execute();
+
+            if ($stmt->affected_rows > 0) {
+                return ["message" => "Taxi updated successfully"];
+            } else {
+                return ["message" => "No changes made"];
+            }
+        } catch (Exception $e) {
+            return ["error" => $e->getMessage()];
+        }
+    }
+
+
+
+    public function createTaxi($driver_name, $status, $from_location, $to_location) {
+        $stmt = $this->conn->prepare('INSERT INTO taxis (driver_name, status, from_location, to_location) VALUES (?, ?, ?, ?)');
+        $stmt->bind_param('ssss', $driver_name, $status, $from_location, $to_location);
+    
+        try {
+            $stmt->execute();
+            return ["message" => "New taxi created successfully", "status" => "success"];
+        } catch (Exception $e) {
+            return ["error" => $stmt->error];
+        }
+    }
+
+
+    public function getAllTaxis() {
+        $stmt = $this->conn->prepare('SELECT * FROM taxis');
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $taxis = [];
+        while ($row = $result->fetch_assoc()) {
+            $taxis[] = $row;
+        }
+        
+        return $taxis;
+    }
+
+
+    public function deleteTaxi($taxi_id) {
+        $stmt = $this->conn->prepare('DELETE FROM taxis WHERE taxi_id=?');
+        $stmt->bind_param('i', $taxi_id);
+    
+        try {
+            $stmt->execute();
+            return ["message" => "Taxi record deleted successfully", "status" => "success"];
+        } catch (Exception $e) {
+            return ["error" => $stmt->error];
+        }
+    }
+
+    public function searchTaxisByDriver($driver_name) {
+        $stmt = $this->conn->prepare('SELECT * FROM taxis WHERE driver_name LIKE ?');
+        $searchTerm = "%{$driver_name}%";
+        $stmt->bind_param('s', $searchTerm);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        $taxis = [];
+        while ($row = $result->fetch_assoc()) {
+            $taxis[] = $row;
+        }
+    
+        return $taxis;
+    }
+    
+    
+    
+    
 }
-?>
+
