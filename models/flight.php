@@ -106,4 +106,20 @@ class Flight
         $stmt->execute();
         return ["message" => "Flight updated successfully"];
     }
+
+    
+    public function delete($flight_id)
+    {
+        $stmt = $this->mysqli->prepare('DELETE FROM flights WHERE flight_id = ?');
+        if (!$stmt) {
+            return ["message" => "Database error: " . $this->mysqli->error];
+        }
+        $stmt->bind_param("i", $flight_id);
+        $stmt->execute();
+        if ($stmt->affected_rows > 0) {
+            return ["message" => "Flight deleted successfully"];
+        } else {
+            return ["message" => "Flight not found"];
+        }
+    }
 }
