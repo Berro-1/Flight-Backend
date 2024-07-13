@@ -67,4 +67,33 @@ class Flight
         $stmt->execute();
         return ["message" => "Flight created successfully"];
     }
+    
+    public function get()
+    {
+        $result = $this->mysqli->query('SELECT * FROM flights');
+        if (!$result) {
+            return ["message" => "Database error: " . $this->mysqli->error];
+        }
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function getOne($flight_id)
+    {
+        if (!isset($flight_id) || !is_numeric($flight_id) || $flight_id <= 0) {
+            return ["message" => "Invalid flight ID"];
+        }
+
+        $stmt = $this->mysqli->prepare('SELECT * FROM flights WHERE flight_id = ?');
+        if (!$stmt) {
+            return ["message" => "Database error: " . $this->mysqli->error];
+        }
+        $stmt->bind_param("i", $flight_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $flight = $result->fetch_assoc();
+        if (!$flight) {
+            return ["message" => "Flight not found"];
+        }
+        return $flight;
+    }
 }
