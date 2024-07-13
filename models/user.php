@@ -10,7 +10,7 @@ class User
 
     public function create($first_name, $last_name, $email, $password, $phone)
     {
-        if (empty($first_name) || empty($last_name) || empty($email) || empty($password) || empty($phone)) {
+        if (isset($first_name) || isset($last_name) || isset($email) || isset($password) || isset($phone)) {
             return ["message" => "All fields are required."];
         }
 
@@ -66,7 +66,7 @@ class User
 
     public function login($email, $password)
     {
-        if (empty($email) || empty($password)) {
+        if (isset($email) || isset($password)) {
             return ["message" => "All fields are required."];
         }
 
@@ -89,7 +89,7 @@ class User
 
     public function update($id, $first_name, $last_name, $email, $password, $phone)
     {
-        if (empty($first_name) || empty($last_name) || empty($email) || empty($password) || empty($phone)) {
+        if (isset($first_name) || isset($last_name) || isset($email) || isset($password) || isset($phone)) {
             return ["message" => "All fields are required."];
         }
 
