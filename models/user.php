@@ -8,12 +8,13 @@ class User
         $this->mysqli = $mysqli;
     }
 
-    public function create($first_name, $last_name, $email, $password, $phone)
+    public function create($username, $email, $password)
     {
-        if (empty($first_name) || empty($last_name) || empty($email) || empty($password) || empty($phone)) {
+        //validate if the user missed an empty imput
+        if (empty($username) || empty($email) || empty($password) ) {
             return ["message" => "All fields are required."];
         }
-
+        //validate email
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return ["message" => "Invalid email format"];
         }
@@ -24,26 +25,14 @@ class User
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows > 0) {
-            return ["message" => "Email already exists"];
-        }
-
-        // Check if phone exists
-        $stmt = $this->mysqli->prepare('SELECT id FROM users WHERE phone = ?');
-        $stmt->bind_param("s", $phone);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            return ["message" => "Phone number already exists"];
-        }
-        if (!preg_match('/^\+?\d{10,15}$/', $phone)) {
-            return ["message" => "Invalid phone number format. It should be 10 to 15 digits long and may start with a +"];
+            return ["message" => "email or password invalid"];
         }
 
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
         // Insert user
-        $stmt = $this->mysqli->prepare('INSERT INTO users (first_name, last_name, email, password, phone) VALUES (?, ?, ?, ?, ?)');
-        $stmt->bind_param("sssss", $first_name, $last_name, $email, $hashedPassword, $phone);
+        $stmt = $this->mysqli->prepare('INSERT INTO users (username, email, password) VALUES (?, ?, ?)');
+        $stmt->bind_param("sssss", $username, $email, $hashedPassword);
         $stmt->execute();
 
         return ["message" => "User created successfully"];
@@ -80,16 +69,14 @@ class User
             if (password_verify($password, $user['password'])) {
                 return ["message" => "Login successful"];
             } else {
-                return ["message" => "Invalid password"];
+                return ["message" => "invalid password or email"];
             }
-        } else {
-            return ["message" => "User not found"];
         }
     }
 
-    public function update($id, $first_name, $last_name, $email, $password, $phone)
+    public function update($id, $username, $email, $password)
     {
-        if (empty($first_name) || empty($last_name) || empty($email) || empty($password) || empty($phone)) {
+        if (empty($username) || empty($email) || empty($password)) {
             return ["message" => "All fields are required."];
         }
 
@@ -109,8 +96,8 @@ class User
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
         // Update user details
-        $stmt = $this->mysqli->prepare('UPDATE users SET first_name = ?, last_name = ?, email = ?, password = ?, phone = ? WHERE id = ?');
-        $stmt->bind_param("sssssi", $first_name, $last_name, $email, $hashedPassword, $phone, $id);
+        $stmt = $this->mysqli->prepare('UPDATE users SET username = ?, email = ?, password = ? WHERE id = ?');
+        $stmt->bind_param("sssssi", $username,  $email, $hashedPassword, $id);
         $stmt->execute();
 
         return [
@@ -119,34 +106,30 @@ class User
         ];
     }
 
-    public function delete($id, $password)
+    public function delete($id)
     {
         if (!isset($id) || !is_numeric($id) || $id <= 0) {
             return ["message" => "Invalid user ID"];
         }
 
-        if (!isset($password) || empty($password)) {
-            return ["message" => "Password is required"];
-        }
-
         // Check if user exists
-        $stmt = $this->mysqli->prepare('SELECT password FROM users WHERE id = ?');
-        if (!$stmt) {
-            return ["message" => "Database error: " . $this->mysqli->error];
-        }
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $user = $result->fetch_assoc();
+        //$stmt = $this->mysqli->prepare('SELECT password FROM users WHERE id = ?');
+        //if (!$stmt) {
+            //return ["message" => "Database error: " . $this->mysqli->error];
+        //}
+        //$stmt->bind_param("i", $id);
+        //$stmt->execute();
+        //$result = $stmt->get_result();
+        //$user = $result->fetch_assoc();
 
-        if (!$user) {
-            return ["message" => "User not found"];
-        }
+        //if (!$user) {
+        //    return ["message" => "User not found"];
+        //}
 
         // Validate the password
-        if (!password_verify($password, $user['password'])) {
-            return ["message" => "Invalid password"];
-        }
+        //if (!password_verify($password, $user['password'])) {
+          //  return ["message" => "Invalid password"];
+        //}
 
         // Delete the user
         $stmt = $this->mysqli->prepare('DELETE FROM users WHERE id = ?');
