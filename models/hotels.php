@@ -47,4 +47,17 @@ class hotel
         $stmt->bind_param('ssi', $name, $location, $rooms);
         return $stmt->execute();
     }
+
+    public function deleteHotel($id){
+
+        $query = 'delete from hotels where hotel_id=?';
+        $stmt = $this->mysqli->prepare($query);
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        if($stmt->effected_rows > 0){
+            return ['message'=>'hotel deleted successfully', 'rowCount'=>$stmt->effected_rows]; 
+        } else {
+            return ['message'=>'hotel not found'];
+        }
+    }
 }
