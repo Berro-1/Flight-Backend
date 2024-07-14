@@ -13,8 +13,8 @@ class Flight
     {
         // Validate that all required fields are set
         if (
-            !isset($data['flight_number']) || !isset($data['departure_airport_id']) || 
-            !isset($data['destination_airport_id']) || !isset($data['departure_datetime']) || 
+            !isset($data['flight_number']) || !isset($data['departure_airport_id']) ||
+            !isset($data['destination_airport_id']) || !isset($data['departure_datetime']) ||
             !isset($data['arrival_datetime']) || !isset($data['available_seats'])
         ) {
             return ["message" => "All fields are required."];
@@ -65,19 +65,33 @@ class Flight
         }
         $stmt->bind_param("iiissi", $flight_number, $departure_airport_id, $destination_airport_id, $departure_datetime, $arrival_datetime, $available_seats);
         $stmt->execute();
-        return ["message" => "Flight created successfully"];
+        if ($stmt->affected_rows > 0) {
+            return ["message" => "Flight created successfully"];
+        } else {
+            return ["message" => "No flight was created"];
+        }
     }
-    
-    public function read()
+
+    public function getFlights($departure_airport_id, $destination_airport_id, $departure_datetime, $arrival_datetime)
     {
-        $result = $this->mysqli->query('SELECT * FROM flights');
+        $query = 'SELECT * FROM flights WHERE departure_airport_id = ? AND destination_airport_id = ? AND departure_datetime >= ? AND arrival_datetime <= ? ';
+        $stmt = $this->mysqli->prepare($query);
+        if (!$stmt) {
+            return ["message" => "Database error: " . $this->mysqli->error];
+        }
+    
+        $stmt->bind_param("iiss", $departure_airport_id, $destination_airport_id, $departure_datetime, $arrival_datetime);
+        $stmt->execute();
+        $result = $stmt->get_result();
         if (!$result) {
             return ["message" => "Database error: " . $this->mysqli->error];
         }
+    
         return $result->fetch_all(MYSQLI_ASSOC);
     }
-
-    public function readOne($flight_id)
+    
+    
+    public function getOneFlight($flight_id)
     {
         if (!isset($flight_id) || !is_numeric($flight_id) || $flight_id <= 0) {
             return ["message" => "Invalid flight ID"];
@@ -107,7 +121,7 @@ class Flight
         return ["message" => "Flight updated successfully"];
     }
 
-    
+
     public function delete($flight_id)
     {
         $stmt = $this->mysqli->prepare('DELETE FROM flights WHERE flight_id = ?');
