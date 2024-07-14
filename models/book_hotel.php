@@ -4,13 +4,13 @@ Class BookHotel
 {
     private $mysqli;
 
-    function __construct($mysqli)
+    public function __construct($mysqli)
         
     {
         $this->mysqli = $mysqli;
     }
 
-    function bookHotel($booking_id, $hotel_id, $date){
+    public function bookHotel($booking_id, $hotel_id, $date){
 
         $query = 'insert into hotelbookings (booking_id, hotel_id, checkin_date) values (?, ?, ?)';
         $stmt = $this->mysqli->prepare($query);

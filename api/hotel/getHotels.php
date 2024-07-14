@@ -1,4 +1,7 @@
 <?php
+header('Access-Control-Allow-Origin: *'); // Allows requests from any origin
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS'); // Allowed methods
+header('Access-Control-Allow-Headers: Content-Type, Authorization'); // Allowed headers
 require_once '../../config/config.php';
 require_once '../../models/hotels.php';
 

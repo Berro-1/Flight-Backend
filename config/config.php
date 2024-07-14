@@ -13,10 +13,11 @@ function getDBConnection()
         die("Connection error: " . $conn->connect_error);
     }
     
-    echo "MySQLi connection successfully established.<br>";
+   
     
     return $conn;
 }
 
 $mysqli = getDBConnection();
+
 
