@@ -45,7 +45,7 @@ class Airport
 
     public function createAirport($airport_name)
     {
-        if (isset($airport_name)) {
+        if (!isset($airport_name)) {
             return ["message" => "Airport name is required"];
         }
 
