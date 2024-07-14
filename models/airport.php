@@ -88,6 +88,25 @@ class Airport
             return ["message" => "No changes made to the airport"];
         }
     }
+    public function deleteAirport($airport_id)
+    {
+        if (!is_numeric($airport_id) || $airport_id <= 0) {
+            return ["message" => "Invalid airport ID"];
+        }
 
+        $query = 'DELETE FROM airports WHERE Airport_id = ?';
+        $stmt = $this->mysqli->prepare($query);
+        if (!$stmt) {
+            return ["message" => "Database error: " . $this->mysqli->error];
+        }
+
+        $stmt->bind_param("i", $airport_id);
+        $stmt->execute();
+        if ($stmt->affected_rows > 0) {
+            return ["message" => "Airport deleted successfully"];
+        } else {
+            return ["message" => "Airport not found"];
+        }
+    }
  
 }
