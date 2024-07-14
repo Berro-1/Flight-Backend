@@ -43,5 +43,26 @@ class Airport
     }
 
 
+    public function createAirport($airport_name)
+    {
+        if (isset($airport_name)) {
+            return ["message" => "Airport name is required"];
+        }
+
+        $query = 'INSERT INTO airports (AirportName) VALUES (?)';
+        $stmt = $this->mysqli->prepare($query);
+        if (!$stmt) {
+            return ["message" => "Database error: " . $this->mysqli->error];
+        }
+
+        $stmt->bind_param("s", $airport_name);
+        $stmt->execute();
+        if ($stmt->affected_rows > 0) {
+            return ["message" => "Airport created successfully", "Airport_id" => $this->mysqli->insert_id];
+        } else {
+            return ["message" => "Failed to create airport"];
+        }
+    }
+
+
 }
-?>
