@@ -5,7 +5,7 @@ class User {
     public function __construct($conn) {
         $this->conn = $conn;
     }
-
+        //creation
     public function createUser($username, $email, $password) {
         if (empty($username) || empty($email) || empty($password)) {
             return ["error" => "All fields are required"];
@@ -34,7 +34,7 @@ class User {
             return ["error" => $stmt->error];
         }
     }
-
+    //updating
     public function updateUser($user_id, $username, $email, $password = null) {
         if (empty($username) || empty($email)) {
             return ["error" => "Username and email are required"];
@@ -68,7 +68,7 @@ class User {
             return ["error" => $e->getMessage()];
         }
     }
-
+        //loginfield
     public function loginUser($email, $password) {
         if (empty($email) || empty($password)) {
             return ["error" => "Email and password are required"];
@@ -98,7 +98,7 @@ class User {
             return ["error" => "Invalid email or password"];
         }
     }
-
+     //logoutfield
     public function logoutUser() {
         session_unset();
         session_destroy();

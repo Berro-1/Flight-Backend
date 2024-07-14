@@ -13,7 +13,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 // Log the request method
 error_log("Request method: " . $method);
-
+///get methods 
 if ($method == 'GET') {
     // Get the user_id from query parameters
     $user_id = $_GET['user_id'] ?? null;
@@ -31,7 +31,7 @@ if ($method == 'GET') {
     }
 
     echo json_encode($result);
-
+///post methods
 } elseif ($method == 'POST') {
     // Log all POST data
     error_log("POST data: " . print_r($_POST, true));
@@ -88,41 +88,3 @@ if ($method == 'GET') {
     echo json_encode(["error" => "Unsupported request method"]);
 }
 ?>
-
-
-<?php 
-require '../.../config/config.php';
-require '../../models/User.php';
-
-//initlize the database connction 
-$mysqli = getDBConnection();
-
-$userModel = new User($mysqli);
-
-$method = $_SERVER['REQUEST_METHOD'];
-
-
-error-log("Request method : " .$method );
-
-if  ($method == 'Get'){
-    $user_id=$_GET['user_id']??null ; 
-    $action = $_Get['action']?? null ; 
-
-    if ($user_id){
-        $result = $userModel->getUserById($user_id);
-
-    }elseif($action == 'search'){
-        $term = $_Get['term'] ?? '' ;
-        $result = $userModel -> searchUsers($term);
-    }elseif($action == 'getAll'){
-        $result=$userModel->getAllUsers($term);
-    }else { 
-        $result = ["error"=> "Invalid action or use_id is required"];
-    }
-    exho json_encode($result);
-
-if ( $method == 'Get'){
-     $user_id = 
-}elseif($action =='search'){
-    $rsult =
-}
