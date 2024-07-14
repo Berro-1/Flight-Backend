@@ -1,6 +1,6 @@
 <?php
 
-class hotel
+class Hotel
 {
     private $mysqli;
 
@@ -27,6 +27,9 @@ class hotel
         }
 
         $stmt = $this->mysqli->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Prepare failed: (" . $this->mysqli->errno . ") " . $this->mysqli->error);
+        } 
 
         if(!empty($params)){
             $stmt->bind_param($types, ...$params);
@@ -51,9 +54,12 @@ class hotel
 
         $query = 'insert into hotels (hotel_name, location, available_rooms) values (?, ?, ?)';
         $stmt = $this->mysqli->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Prepare failed: (" . $this->mysqli->errno . ") " . $this->mysqli->error);
+        } 
         $stmt->bind_param('ssi', $name, $location, $rooms);
         $stmt->execute();
-        ['message' => 'Hotel added successfully'];
+        return ['message' => 'Hotel added successfully'];
     }
 
     public function deleteHotelById($id)
@@ -63,8 +69,7 @@ class hotel
         
         if (!$stmt) {
             throw new Exception("Prepare failed: (" . $this->mysqli->errno . ") " . $this->mysqli->error);
-        }
-    
+        }    
         $stmt->bind_param('i', $id);
         $stmt->execute();
     
@@ -75,10 +80,9 @@ class hotel
         }
     }
 
-    public function updateHotel($id, $name = null, $location = null, $rooms = null)
-{
-    $query = 'UPDATE hotels SET ';
+    public function updateHotel($id, $name = null, $location = null, $rooms = null){
 
+    $query = 'UPDATE hotels SET ';
     $params = [];
     
     if ($name !== null) {
@@ -93,7 +97,6 @@ class hotel
         $query .= 'available_rooms=?, ';
         $params[] = $rooms; 
     }
-
     // Remove the trailing comma and space from the query
     $query = rtrim($query, ', ');
 

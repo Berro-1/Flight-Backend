@@ -2,13 +2,13 @@
 require_once '../../config/config.php';
 require_once '../../models/hotels.php';
 
-$hotelModul = new hotel($mysqli);
+$hotelModul = new Hotel($mysqli);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 
     $id = isset($_POST['id']) ? $_POST['id'] : null;
     $name = isset($_POST['name']) ? $_POST['name'] : null;
-    
+
     $response = $hotelModul->getAllHotels($id, $name);
 
     echo json_encode($response);

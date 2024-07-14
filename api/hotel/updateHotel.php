@@ -3,7 +3,7 @@
 require_once '../../config/config.php';
 require_once '../../models/hotels.php';
 
-$hotelModul = new hotel($mysqli);
+$hotelModul = new Hotel($mysqli);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
