@@ -64,5 +64,30 @@ class Airport
         }
     }
 
+    public function updateAirport($airport_id, $airport_name)
+    {
+        if (!is_numeric($airport_id) || $airport_id <= 0) {
+            return ["message" => "Invalid airport ID"];
+        }
 
+        if (isset($airport_name)) {
+            return ["message" => "Airport name is required"];
+        }
+
+        $query = 'UPDATE airports SET AirportName = ? WHERE Airport_id = ?';
+        $stmt = $this->mysqli->prepare($query);
+        if (!$stmt) {
+            return ["message" => "Database error: " . $this->mysqli->error];
+        }
+
+        $stmt->bind_param("si", $airport_name, $airport_id);
+        $stmt->execute();
+        if ($stmt->affected_rows > 0) {
+            return ["message" => "Airport updated successfully"];
+        } else {
+            return ["message" => "No changes made to the airport"];
+        }
+    }
+
+ 
 }
