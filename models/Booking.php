@@ -1,13 +1,11 @@
 <?php
-class Booking {
+class Booking{
     private $mysqli;
 
     public function __construct($mysqli)
     {
         $this->mysqli = $mysqli;
     }
-
-    // Function to fetch all flight bookings with necessary details
     public function getAllFlightBookings() {
         $query = "
         SELECT u.username, f.flight_number, dep_airport.AirportName AS departure_airport_name,
