@@ -8,9 +8,9 @@ class User
         $this->mysqli = $mysqli;
     }
 
-    public function create($first_name, $last_name, $email, $password, $phone)
+    public function create($user_name, $email, $pass)
     {
-        if (isset($first_name) || isset($last_name) || isset($email) || isset($password) || isset($phone)) {
+        if (!isset($user_name) || !isset($email) || !isset($pass)) {
             return ["message" => "All fields are required."];
         }
 
@@ -19,31 +19,31 @@ class User
         }
 
         // Check if email exists
-        $stmt = $this->mysqli->prepare('SELECT id FROM users WHERE email = ?');
+        $stmt = $this->mysqli->prepare('SELECT * FROM users WHERE email = ?');
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows > 0) {
-            return ["message" => "Email already exists"];
+            return ["message" => "User already exists"];
         }
 
         // Check if phone exists
-        $stmt = $this->mysqli->prepare('SELECT id FROM users WHERE phone = ?');
-        $stmt->bind_param("s", $phone);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            return ["message" => "Phone number already exists"];
-        }
-        if (!preg_match('/^\+?\d{10,15}$/', $phone)) {
-            return ["message" => "Invalid phone number format. It should be 10 to 15 digits long and may start with a +"];
-        }
+        // $stmt = $this->mysqli->prepare('SELECT id FROM users WHERE phone = ?');
+        // $stmt->bind_param("s", $phone);
+        // $stmt->execute();
+        // $result = $stmt->get_result();
+        // if ($result->num_rows > 0) {
+        //     return ["message" => "Phone number already exists"];
+        // }
+        // if (!preg_match('/^\+?\d{10,15}$/', $phone)) {
+        //     return ["message" => "Invalid phone number format. It should be 10 to 15 digits long and may start with a +"];
+        // }
 
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $hashedPassword = password_hash($pass, PASSWORD_DEFAULT);
 
         // Insert user
-        $stmt = $this->mysqli->prepare('INSERT INTO users (first_name, last_name, email, password, phone) VALUES (?, ?, ?, ?, ?)');
-        $stmt->bind_param("sssss", $first_name, $last_name, $email, $hashedPassword, $phone);
+        $stmt = $this->mysqli->prepare('INSERT INTO users (username, email, password) VALUES (?, ?, ? )');
+        $stmt->bind_param("sss", $user_name, $email, $hashedPassword);
         $stmt->execute();
 
         return ["message" => "User created successfully"];
