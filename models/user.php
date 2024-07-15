@@ -1,5 +1,8 @@
 <?php
+require_once '../api/user/signup.php';
 class User
+
+
 {
     private $mysqli;
 
@@ -74,7 +77,7 @@ class User
         $stmt->bind_param("ss", $email, $username);
         $stmt->execute();
         $stmt->store_result();
-        $stmt->bind_result($id, $username, $email, $hashed_password);
+        $stmt->bind_result($user_id, $username, $email, $hashed_password);
         $stmt->fetch();
         $user_exist = $stmt->num_rows;
 
