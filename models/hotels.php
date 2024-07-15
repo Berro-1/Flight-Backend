@@ -80,6 +80,19 @@ class Hotel
         }
     }
 
+    public function getHotelByLocation($location){
+        $query = 'select * from hotels where location=?';
+        $stmt = $this->mysqli->prepare($query);
+        $stmt->bind_param('s', $location);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if (!$result) {
+            return ["message" => "Database error: " . $this->mysqli->error];
+        }
+    
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
     public function updateHotel($id, $name = null, $location = null, $rooms = null){
 
     $query = 'UPDATE hotels SET ';
