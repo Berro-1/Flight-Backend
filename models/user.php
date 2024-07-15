@@ -64,27 +64,37 @@ class User
         return $result->fetch_assoc();
     }
 
-    public function login($email, $password)
+    public function login($email, $password, $username)
     {
-        if (isset($email) || isset($password)) {
+        if (!isset($email) || !isset($password) || !isset($username)) {
             return ["message" => "All fields are required."];
         }
 
-        $stmt = $this->mysqli->prepare('SELECT * FROM users WHERE email = ?');
-        $stmt->bind_param("s", $email);
+        $stmt = $this->mysqli->prepare('SELECT user_id, username, email, password FROM users WHERE email = ? or username = ?');
+        $stmt->bind_param("ss", $email, $username);
         $stmt->execute();
-        $result = $stmt->get_result();
-        $user = $result->fetch_assoc();
+        $stmt->store_result();
+        $stmt->bind_result($id, $username, $email, $hashed_password);
+        $stmt->fetch();
+        $user_exist = $stmt->num_rows;
 
-        if ($user) {
-            if (password_verify($password, $user['password'])) {
-                return ["message" => "Login successful"];
-            } else {
-                return ["message" => "Invalid password"];
-            }
+        if (!$user_exist) {  
+
+            return ["message" => "user not found"];
+
         } else {
-            return ["message" => "User not found"];
+
+            if(password_verify($password, $hashed_password)){
+                return ['status' => 'authenticated',
+                        'id '=> $id,
+                        'name'=> $username,
+                        'email' => $email];
+            } else {
+
+                return ['status' => 'wrong password'];
+            }
         }
+       
     }
 
     public function update($id, $first_name, $last_name, $email, $password, $phone)
