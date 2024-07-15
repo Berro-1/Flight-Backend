@@ -89,6 +89,36 @@ class Flight
     
         return $result->fetch_all(MYSQLI_ASSOC);
     }
+
+    public function getallFlights()
+    {
+        $query = 'SELECT 
+        f.flight_number,
+        d.AirportName AS departure_airport,
+        a.AirportName AS arrival_airport,
+        f.departure_datetime,
+        f.arrival_datetime,
+        f.available_seats
+    FROM 
+        flights f
+    JOIN 
+        airports d ON f.departure_airport_id = d.Airport_id
+    JOIN 
+        airports a ON f.destination_airport_id = a.Airport_id';    
+        $stmt = $this->mysqli->prepare($query);
+        if (!$stmt) {
+            return ["message" => "Database error: " . $this->mysqli->error];
+        }
+    
+        //$stmt->bind_param("iiss", $departure_airport_id, $destination_airport_id, $departure_datetime, $arrival_datetime);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if (!$result) {
+            return ["message" => "Database error: " . $this->mysqli->error];
+        }
+    
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
     
     
     public function getOneFlight($flight_id)
