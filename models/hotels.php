@@ -1,6 +1,6 @@
 <?php
 
-class hotel
+class Hotel
 {
     private $mysqli;
 
@@ -27,6 +27,9 @@ class hotel
         }
 
         $stmt = $this->mysqli->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Prepare failed: (" . $this->mysqli->errno . ") " . $this->mysqli->error);
+        } 
 
         if(!empty($params)){
             $stmt->bind_param($types, ...$params);
@@ -50,6 +53,7 @@ class hotel
     public function addHotel($name, $location, $rooms) {
         $query = 'INSERT INTO hotels (hotel_name, location, available_rooms) VALUES (?, ?, ?)';
         $stmt = $this->mysqli->prepare($query);
+<<<<<<< HEAD
     
         if ($stmt === false) {
             return ['error' => 'Failed to prepare statement'];
@@ -62,6 +66,14 @@ class hotel
         } else {
             return ['error' => 'Failed to add hotel: ' . $stmt->error];
         }
+=======
+        if (!$stmt) {
+            throw new Exception("Prepare failed: (" . $this->mysqli->errno . ") " . $this->mysqli->error);
+        } 
+        $stmt->bind_param('ssi', $name, $location, $rooms);
+        $stmt->execute();
+        return ['message' => 'Hotel added successfully'];
+>>>>>>> 51196cecc0deb78ddd3707a6c0825f1f16ba375b
     }
     
     public function deleteHotelById($id)
@@ -71,8 +83,7 @@ class hotel
         
         if (!$stmt) {
             throw new Exception("Prepare failed: (" . $this->mysqli->errno . ") " . $this->mysqli->error);
-        }
-    
+        }    
         $stmt->bind_param('i', $id);
         $stmt->execute();
     
@@ -83,10 +94,48 @@ class hotel
         }
     }
 
+<<<<<<< HEAD
     public function updateHotel($id, $name, $location, $rooms)
 {
     $query = 'UPDATE hotels SET hotel_name = ?, location = ?, available_rooms = ? WHERE hotel_id = ?';
 
+=======
+    public function getHotelByLocation($location){
+        $query = 'select * from hotels where location=?';
+        $stmt = $this->mysqli->prepare($query);
+        $stmt->bind_param('s', $location);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if (!$result) {
+            return ["message" => "Database error: " . $this->mysqli->error];
+        }
+    
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function updateHotel($id, $name = null, $location = null, $rooms = null){
+
+    $query = 'UPDATE hotels SET ';
+    $params = [];
+    
+    if ($name !== null) {
+        $query .= 'hotel_name=?, ';
+        $params[] = $name; 
+    }
+    if ($location !== null) {
+        $query .= 'location=?, ';
+        $params[] = $location; 
+    }
+    if ($rooms !== null) {
+        $query .= 'available_rooms=?, ';
+        $params[] = $rooms; 
+    }
+    // Remove the trailing comma and space from the query
+    $query = rtrim($query, ', ');
+
+    $query .= ' WHERE hotel_id=?';
+    $params[] = $id; 
+>>>>>>> 51196cecc0deb78ddd3707a6c0825f1f16ba375b
     
     $stmt = $this->mysqli->prepare($query);
     
