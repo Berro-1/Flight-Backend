@@ -1,5 +1,4 @@
 <?php
-require_once '../api/user/signup.php';
 class User
 
 
@@ -69,6 +68,9 @@ class User
 
     public function login($email, $password, $username)
     {
+        // $user_id = 0;
+        // $user
+
         if (!isset($email) || !isset($password) || !isset($username)) {
             return ["message" => "All fields are required."];
         }
