@@ -72,15 +72,15 @@ class Flight
         }
     }
 
-    public function getFlights($departure_airport_id, $destination_airport_id, $departure_datetime, $arrival_datetime)
+    public function getFlights($departure_airport_id, $destination_airport_id)
     {
-        $query = 'SELECT * FROM flights WHERE departure_airport_id = ? AND destination_airport_id = ? AND departure_datetime >= ? AND arrival_datetime <= ? ';
+        $query = 'SELECT * FROM flights WHERE departure_airport_id = ? AND destination_airport_id = ?';
         $stmt = $this->mysqli->prepare($query);
         if (!$stmt) {
             return ["message" => "Database error: " . $this->mysqli->error];
         }
     
-        $stmt->bind_param("iiss", $departure_airport_id, $destination_airport_id, $departure_datetime, $arrival_datetime);
+        $stmt->bind_param("ii", $departure_airport_id, $destination_airport_id);
         $stmt->execute();
         $result = $stmt->get_result();
         if (!$result) {
@@ -92,19 +92,20 @@ class Flight
 
     public function getallFlights()
     {
-        $query = 'SELECT 
-        f.flight_number,
+        $query = 'SELECT f.flight_id,f.flight_number,
+        d.Airport_id as departure_airportid ,
+        a.Airport_id as arrival_airportid,
         d.AirportName AS departure_airport,
         a.AirportName AS arrival_airport,
         f.departure_datetime,
         f.arrival_datetime,
         f.available_seats
-    FROM 
-        flights f
-    JOIN 
-        airports d ON f.departure_airport_id = d.Airport_id
-    JOIN 
-        airports a ON f.destination_airport_id = a.Airport_id';    
+            FROM 
+                flights f
+            JOIN 
+                airports d ON f.departure_airport_id = d.Airport_id
+            JOIN 
+                airports a ON f.destination_airport_id = a.Airport_id';    
         $stmt = $this->mysqli->prepare($query);
         if (!$stmt) {
             return ["message" => "Database error: " . $this->mysqli->error];
@@ -166,4 +167,32 @@ class Flight
             return ["message" => "Flight not found"];
         }
     }
+    public function getFlightByDepartureDestinatin($departure, $destination){
+        $query = 'SELECT 
+                        *
+                    FROM 
+                        flights
+                    JOIN 
+                        airports AS dep_airports ON flights.departure_airport_id = dep_airports.Airport_id
+                    JOIN 
+                        airports AS dest_airports ON flights.destination_airport_id = dest_airports.Airport_id
+                    WHERE 
+                        dep_airports.AirportName =? AND 
+                        dest_airports.AirportName =?';
+
+        $stmt = $this->mysqli->prepare($query);
+        if (!$stmt) {
+            return ["message" => "Database error: " . $this->mysqli->error];
+        }
+        $stmt->bind_param('ss', $departure, $destination);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if(!$result){
+            return["message" => "No flights"];
+        }
+             return $result->fetch_all(MYSQLI_ASSOC);
+        
+                               
+}
+        
 }
