@@ -92,19 +92,20 @@ class Flight
 
     public function getallFlights()
     {
-        $query = 'SELECT 
-        f.flight_number,
+        $query = 'SELECT f.flight_id,f.flight_number,
+        d.Airport_id as departure_airportid ,
+        a.Airport_id as arrival_airportid,
         d.AirportName AS departure_airport,
         a.AirportName AS arrival_airport,
         f.departure_datetime,
         f.arrival_datetime,
         f.available_seats
-    FROM 
-        flights f
-    JOIN 
-        airports d ON f.departure_airport_id = d.Airport_id
-    JOIN 
-        airports a ON f.destination_airport_id = a.Airport_id';    
+            FROM 
+                flights f
+            JOIN 
+                airports d ON f.departure_airport_id = d.Airport_id
+            JOIN 
+                airports a ON f.destination_airport_id = a.Airport_id';    
         $stmt = $this->mysqli->prepare($query);
         if (!$stmt) {
             return ["message" => "Database error: " . $this->mysqli->error];
