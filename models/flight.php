@@ -166,4 +166,32 @@ class Flight
             return ["message" => "Flight not found"];
         }
     }
+    public function getFlightByDepartureDestinatin($departure, $destination){
+        $query = 'SELECT 
+                        *
+                    FROM 
+                        flights
+                    JOIN 
+                        airports AS dep_airports ON flights.departure_airport_id = dep_airports.Airport_id
+                    JOIN 
+                        airports AS dest_airports ON flights.destination_airport_id = dest_airports.Airport_id
+                    WHERE 
+                        dep_airports.AirportName =? AND 
+                        dest_airports.AirportName =?';
+
+        $stmt = $this->mysqli->prepare($query);
+        if (!$stmt) {
+            return ["message" => "Database error: " . $this->mysqli->error];
+        }
+        $stmt->bind_param('ss', $departure, $destination);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if(!$result){
+            return["message" => "No flights"];
+        }
+             return $result->fetch_all(MYSQLI_ASSOC);
+        
+                               
+}
+        
 }
