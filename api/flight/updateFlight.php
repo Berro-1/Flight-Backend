@@ -15,7 +15,7 @@ try {
     $flight_id = $data['flight_id'];
     $flight_number = $data['flight_number'];
     $departure_airport_id = $data['departure_airport_id'];
-    $arrival_airport_id = $data['arrival_airport_id']; 
+    $arrival_airport_id = $data['arrival_airport_id'];  
     $departure_datetime = $data['departure_datetime'];
     $arrival_datetime = $data['arrival_datetime']; 
     $available_seats = $data['available_seats'];
