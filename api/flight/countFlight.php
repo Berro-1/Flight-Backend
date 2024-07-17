@@ -9,10 +9,9 @@ header('Access-Control-Allow-Headers: Content-Type, Authorization');
 require_once '../../config/config.php';
 require_once '../../models/Flight.php';
 
-
 $flightModel = new Flight($mysqli);
 
-$response = $flightModel->countFlights(); 
+$response = $flightModel->countFlights(); // Ensure you have this method in the Flight model
 
 header('Content-Type: application/json');
 echo json_encode($response);
