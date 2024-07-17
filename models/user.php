@@ -86,7 +86,7 @@ class User
         $admin = $result->fetch_assoc();
 
         if ($admin) {
-            if ($password == $admin['admin_password']) {
+            if (password_verify($password, $admin['admin_password'])) {
                 $payload = [
                     'iat' => time(),
                     'exp' => time() + 3600,
@@ -112,7 +112,7 @@ class User
         $user = $result->fetch_assoc();
 
         if ($user) {
-            if ($password==$user['password']) {
+            if (password_verify($password,$user['password'])) {
                 $payload = [
                     'iat' => time(),
                     'exp' => time() + 3600,
