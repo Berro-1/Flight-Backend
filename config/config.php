@@ -16,11 +16,9 @@ function getDBConnection()
         die("Connection error: " . $conn->connect_error);
     }
     
-<<<<<<< HEAD
+
     //echo "MySQLi connection successfully established.<br>";
-=======
-    // echo "MySQLi connection successfully established.<br>";
->>>>>>> 51196cecc0deb78ddd3707a6c0825f1f16ba375b
+
     
     return $conn;
 }

@@ -9,12 +9,7 @@ header('Access-Control-Allow-Headers: Content-Type, Authorization');
 require_once '../../config/config.php';
 require_once '../../models/hotels.php';
 
-<<<<<<< HEAD
 $hotelModul = new hotel($mysqli);
-=======
-$hotelModul = new Hotel($mysqli);
-if ($_SERVER['REQUEST_METHOD'] == 'POST'){
->>>>>>> 51196cecc0deb78ddd3707a6c0825f1f16ba375b
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
