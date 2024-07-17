@@ -72,21 +72,20 @@ class Flight
         }
     }
 
-    public function getFlights($departure_airport_id, $destination_airport_id)
-    {
+    public function getFlights($departure_airport_id, $destination_airport_id) {
         $query = 'SELECT * FROM flights WHERE departure_airport_id = ? AND destination_airport_id = ?';
         $stmt = $this->mysqli->prepare($query);
         if (!$stmt) {
             return ["message" => "Database error: " . $this->mysqli->error];
         }
-    
+
         $stmt->bind_param("ii", $departure_airport_id, $destination_airport_id);
         $stmt->execute();
         $result = $stmt->get_result();
         if (!$result) {
             return ["message" => "Database error: " . $this->mysqli->error];
         }
-    
+
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
