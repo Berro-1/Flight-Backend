@@ -26,5 +26,17 @@ class Booking{
 
         return $bookings;
     }
+
+    public function bookFlight($user_id, $flight_id, $booking_date, $status) {
+        $query = "INSERT INTO bookings (user_id, flight_id, booking_date, status) VALUES (?, ?, ?, ?)";
+        $stmt = $this->mysqli->prepare($query);
+        $stmt->bind_param("iiss", $user_id, $flight_id, $booking_date, $status);
+
+        if ($stmt->execute()) {
+            return ['booking_id' => $this->mysqli->insert_id, 'message' => 'Flight booked successfully.'];
+        } else {
+            return ['error' => 'Failed to book flight.'];
+        }
+    }
 }
 ?>
