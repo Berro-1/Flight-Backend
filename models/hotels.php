@@ -50,18 +50,24 @@ class Hotel
         
     }
 
-    public function addHotel($name, $location, $rooms){
-
-        $query = 'insert into hotels (hotel_name, location, available_rooms) values (?, ?, ?)';
+    public function addHotel($name, $location, $rooms) {
+        $query = 'INSERT INTO hotels (hotel_name, location, available_rooms) VALUES (?, ?, ?)';
         $stmt = $this->mysqli->prepare($query);
-        if (!$stmt) {
-            throw new Exception("Prepare failed: (" . $this->mysqli->errno . ") " . $this->mysqli->error);
-        } 
-        $stmt->bind_param('ssi', $name, $location, $rooms);
-        $stmt->execute();
-        return ['message' => 'Hotel added successfully'];
-    }
 
+    
+        if ($stmt === false) {
+            return ['error' => 'Failed to prepare statement'];
+        }
+    
+        $stmt->bind_param('ssi', $name, $location, $rooms);
+        
+        if ($stmt->execute()) {
+            return ['message' => 'Hotel added successfully'];
+        } else {
+            return ['error' => 'Failed to add hotel: ' . $stmt->error];
+        }
+    }
+    
     public function deleteHotelById($id)
     {
         $query = 'DELETE FROM hotels WHERE hotel_id = ?';
@@ -80,46 +86,42 @@ class Hotel
         }
     }
 
-    public function updateHotel($id, $name = null, $location = null, $rooms = null){
+    public function updateHotel($id, $name, $location, $rooms)
+{
+    $query = 'UPDATE hotels SET hotel_name = ?, location = ?, available_rooms = ? WHERE hotel_id = ?';
 
-    $query = 'UPDATE hotels SET ';
-    $params = [];
-    
-    if ($name !== null) {
-        $query .= 'hotel_name=?, ';
-        $params[] = $name; 
-    }
-    if ($location !== null) {
-        $query .= 'location=?, ';
-        $params[] = $location; 
-    }
-    if ($rooms !== null) {
-        $query .= 'available_rooms=?, ';
-        $params[] = $rooms; 
-    }
-    // Remove the trailing comma and space from the query
-    $query = rtrim($query, ', ');
 
-    $query .= ' WHERE hotel_id=?';
-    $params[] = $id; 
-    
     $stmt = $this->mysqli->prepare($query);
+    
     if (!$stmt) {
-        throw new Exception("Prepare failed: (" . $this->mysqli->errno . ") " . $this->mysqli->error);
+        throw new Exception("Prepare failed: " . $this->mysqli->error);
     }
+    
+    $stmt->bind_param('ssii', $name, $location, $rooms, $id);
+    
+    if (!$stmt->execute()) {
+        throw new Exception("Execute failed:". $stmt->error);
+    }
+    
+    $stmt->close();
+    
+    return true; 
+}
+public function searchHotels($searchTerm) {
+    $query = 'SELECT * FROM hotels WHERE hotel_name LIKE ? OR location LIKE ?';
 
-    $types = str_repeat('s', count($params)); 
-    $stmt->bind_param($types, ...$params);
+    $stmt = $this->mysqli->prepare($query);
+ 
+    $searchTerm = '%' . $searchTerm . '%';
+  
+    $stmt->bind_param('ss', $searchTerm, $searchTerm);
 
     $stmt->execute();
 
-    // Check affected rows
-    if ($stmt->affected_rows > 0) {
-        return ['message' => 'Hotel updated successfully', 'rowCount' => $stmt->affected_rows];
-    } else {
-        return ['message' => 'Hotel not found or no changes made'];
-    }
+    $result = $stmt->get_result();
+    
+    return $result->fetch_all(MYSQLI_ASSOC);
 }
 
-    
+
 }

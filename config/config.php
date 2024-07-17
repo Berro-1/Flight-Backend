@@ -1,4 +1,7 @@
 <?php
+header('Access-Control-Allow-Origin: *'); // Allows requests from any origin
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS'); // Allows specific methods
+header('Access-Control-Allow-Headers: Content-Type, Authorization'); //
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'chris_airlines_db');
 define('DB_USER', 'root');
@@ -14,6 +17,9 @@ function getDBConnection()
     }
     
    // echo "MySQLi connection successfully established.\n";
+
+    //echo "MySQLi connection successfully established.<br>";
+
     
     return $conn;
 }
