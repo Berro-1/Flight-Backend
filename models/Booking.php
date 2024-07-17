@@ -38,5 +38,16 @@ class Booking{
             return ['error' => 'Failed to book flight.'];
         }
     }
+    public function bookTaxi($booking_id, $taxi_id, $pickup_location, $destination) {
+        $query = "INSERT INTO taxi_bookings (booking_id, taxi_id, pickup_location, destination) VALUES (?, ?, ?, ?)";
+        $stmt = $this->mysqli->prepare($query);
+        $stmt->bind_param("iiss", $booking_id, $taxi_id, $pickup_location, $destination);
+
+        if ($stmt->execute()) {
+            return ['taxi_booking_id' => $this->mysqli->insert_id, 'message' => 'Taxi booked successfully.'];
+        } else {
+            return ['error' => 'Failed to book taxi.'];
+        }
+    }
 }
 ?>
