@@ -194,5 +194,20 @@ class Flight
         
                                
 }
+public function countFlights() {
+    $query = 'SELECT COUNT(*) as total_flights FROM flights';
+    $stmt = $this->mysqli->prepare($query);
+    
+    if (!$stmt) {
+        return ["message" => "Database error: " . $this->mysqli->error];
+    }
+    
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    
+    return ["total_flights" => $data['total_flights']];
+}
+
         
 }
