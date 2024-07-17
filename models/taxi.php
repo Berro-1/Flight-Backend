@@ -65,7 +65,20 @@ class Taxi {
     }
 
 
+    public function searchTaxis($searchTerm) {
+        $searchTerm = '%' . $searchTerm . '%'; // Wildcards for LIKE
+        $stmt = $this->conn->prepare("SELECT * FROM taxis WHERE driver_name LIKE ? OR status LIKE ? OR from_location LIKE ? OR to_location LIKE ?");
+        $stmt->bind_param('ssss', $searchTerm, $searchTerm, $searchTerm, $searchTerm);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
+        $taxis = [];
+        while ($row = $result->fetch_assoc()) {
+            $taxis[] = $row;
+        }
+
+        return $taxis;
+    }
     public function createTaxi($driver_name, $status, $from_location, $to_location) {
         $stmt = $this->conn->prepare('INSERT INTO taxis (driver_name, status, from_location, to_location) VALUES (?, ?, ?, ?)');
         $stmt->bind_param('ssss', $driver_name, $status, $from_location, $to_location);
