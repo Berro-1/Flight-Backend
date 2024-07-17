@@ -17,6 +17,7 @@ function getDBConnection()
     }
     
    // echo "MySQLi connection successfully established.\n";
+   // echo "MySQLi connection successfully established.\n";
 
     //echo "MySQLi connection successfully established.<br>";
 

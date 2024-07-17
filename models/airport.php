@@ -70,7 +70,7 @@ class Airport
             return ["message" => "Invalid airport ID"];
         }
 
-        if (isset($airport_name)) {
+        if (!isset($airport_name)) {
             return ["message" => "Airport name is required"];
         }
 
@@ -94,7 +94,7 @@ class Airport
             return ["message" => "Invalid airport ID"];
         }
 
-        $query = 'DELETE FROM airports WHERE Airport_id = ?';
+        $query = 'DELETE * FROM airports WHERE Airport_id = ?';
         $stmt = $this->mysqli->prepare($query);
         if (!$stmt) {
             return ["message" => "Database error: " . $this->mysqli->error];
