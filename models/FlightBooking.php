@@ -28,5 +28,26 @@ class Booking {
 
         return $bookings;
     }
+
+    public function createBooking($user_id, $flight_id, $booking_date, $status = 'accepted')
+    {
+        // Prepare the SQL statement
+        $stmt = $this->mysqli->prepare('INSERT INTO bookings (user_id, flight_id, booking_date, status) VALUES (?, ?, ?, ?)');
+    
+        // Check if the statement was prepared correctly
+        if (!$stmt) {
+            return ["message" => "Database error: " . $this->mysqli->error];
+        }
+    
+        // Bind the parameters to the SQL query
+        $stmt->bind_param("iiss", $user_id, $flight_id, $booking_date, $status);
+    
+        // Execute the statement
+        if ($stmt->execute()) {
+            return ["message" => "Booking created successfully", "booking_id" => $stmt->insert_id];
+        } else {
+            return ["message" => "Error creating booking: " . $stmt->error];
+        }
+    }
 }
-?>
+
